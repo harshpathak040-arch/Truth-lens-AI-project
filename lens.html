@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TruthLens AI</title>
+<style>
+  :root {
+    --ink: #0D101C;
+    --ink-panel: #161A2C;
+    --ink-panel-2: #1D2238;
+    --hairline: #2A2F47;
+
+    --brass: #C89B3C;
+    --brass-bright: #E8C468;
+
+    --text-primary: #EDEEF3;
+    --text-muted: #8A8FA3;
+    --text-faint: #5B5F72;
+
+    --true-color: #4ADE80;
+    --false-color: #F87171;
+
+    --font-display: Georgia, "Iowan Old Style", serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-mono: "SF Mono", "JetBrains Mono", ui-monospace, Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    background: var(--ink);
+    color: var(--text-primary);
+    display: flex;
+    justify-content: center;
+    padding: 40px 16px;
+    min-height: 100vh;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 420px;
+    background: var(--ink-panel);
+    border: 1px solid var(--hairline);
+    border-radius: 16px;
+    padding: 26px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.45);
+    overflow: hidden; /* nothing inside the card can ever escape it */
+  }
+
+  /* Header */
+  .app-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+
+  .lens-mark svg { display: block; }
+  .lens-ring-outer { fill: none; stroke: #8A6D2C; stroke-width: 1.4; }
+  .lens-ring-inner { fill: none; stroke: var(--brass); stroke-width: 1.4; }
+  .lens-pupil { fill: var(--brass-bright); }
+
+  .app-title h1 {
+    font-family: var(--font-display);
+    font-size: 21px;
+    margin: 0;
+  }
+
+  .ai-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink);
+    background: var(--brass);
+    padding: 1px 5px;
+    border-radius: 4px;
+    margin-left: 5px;
+    vertical-align: middle;
+  }
+
+  .tagline {
+    margin: 2px 0 0 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+    font-family: var(--font-display);
+  }
+
+  /* Upload zone */
+  .upload-zone {
+    border: 1.5px dashed var(--hairline);
+    border-radius: 12px;
+    padding: 24px 16px;
+    text-align: center;
+    cursor: pointer;
+    background: var(--ink-panel-2);
+    transition: border-color 0.2s ease, background 0.2s ease;
+    overflow: hidden;   /* FRAME FIX: clips anything before it can spill out */
+    width: 100%;
+  }
+
+  .upload-zone:hover,
+  .upload-zone.drag-over {
+    border-color: var(--brass);
+    background: rgba(200, 155, 60, 0.06);
+  }
+
+  .upload-icon { color: var(--brass); margin-bottom: 6px; }
+
+  .upload-text { margin: 4px 0 2px 0; font-size: 13.5px; }
+  .upload-link { color: var(--brass-bright); text-decoration: underline; }
+  .upload-hint { margin: 0; font-size: 11px; color: var(--text-faint); font-family: var(--font-mono); }
+
+  /* Text-only upload confirmation — no image element, so nothing can overflow */
+  .preview-inner {
+    width: 100%;
+  }
+
+  .upload-success {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .check-icon {
+    color: var(--true-color);
+    margin-bottom: 4px;
+  }
+
+  .file-name {
+    margin: 8px 0 0 0;
+    font-size: 11.5px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    word-break: break-all;
+  }
+
+  /* Analyze button */
+  .analyze-btn {
+    width: 100%;
+    margin-top: 14px;
+    padding: 12px;
+    background: var(--brass);
+    color: var(--ink);
+    border: none;
+    border-radius: 10px;
+    font-size: 14.5px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .analyze-btn:hover:not(:disabled) { background: var(--brass-bright); }
+  .analyze-btn:disabled { background: var(--ink-panel-2); color: var(--text-faint); cursor: not-allowed; }
+
+  /* Loading */
+  .loading { margin-top: 14px; text-align: center; }
+  .loading p {
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+  .hidden { display: none !important; }
+
+  /* Result */
+  .result {
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .verdict {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+  .verdict-True  { background: rgba(74,222,128,0.12); color: var(--true-color); }
+  .verdict-False { background: rgba(248,113,113,0.12); color: var(--false-color); }
+
+  /* Dual confidence meters — one for True, one for False */
+  .meters {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .meter-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .meter-label {
+    width: 46px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    flex-shrink: 0;
+  }
+  .meter-label.true-label { color: var(--true-color); }
+  .meter-label.false-label { color: var(--false-color); }
+
+  .meter-track {
+    flex: 1;
+    height: 12px;
+    background: var(--ink-panel-2);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .meter-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 6px;
+    transition: width 0.9s cubic-bezier(.4,0,.2,1);
+  }
+  .meter-fill.true-fill { background: linear-gradient(90deg, #2f9e5c, var(--true-color)); }
+  .meter-fill.false-fill { background: linear-gradient(90deg, #b34848, var(--false-color)); }
+
+  .meter-percent {
+    width: 40px;
+    text-align: right;
+    font-size: 12.5px;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  .label {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-faint);
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  .claim-text {
+    font-size: 13.5px;
+    line-height: 1.5;
+    font-family: var(--font-display);
+    font-style: italic;
+    margin: 0 0 14px 0;
+  }
+
+  .explanation {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--text-muted);
+    margin: 0 0 16px 0;
+  }
+
+  .reset-btn {
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--hairline);
+    border-radius: 10px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .reset-btn:hover { border-color: var(--brass); color: var(--brass-bright); }
+
+  .error-box {
+    margin-top: 14px;
+    padding: 11px 12px;
+    background: rgba(248,113,113,0.12);
+    border: 1px solid rgba(248,113,113,0.3);
+    border-radius: 10px;
+    color: var(--false-color);
+    font-size: 12.5px;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <header class="app-header">
+    <div class="lens-mark" aria-hidden="true">
+      <svg viewBox="0 0 40 40" width="34" height="34">
+        <circle cx="20" cy="20" r="17" class="lens-ring-outer"/>
+        <circle cx="20" cy="20" r="11" class="lens-ring-inner"/>
+        <circle cx="20" cy="20" r="4" class="lens-pupil"/>
+      </svg>
+    </div>
+    <div class="app-title">
+      <h1>TruthLens<span class="ai-tag">AI</span></h1>
+      <p class="tagline">Focus on the claim. Verify the facts.</p>
+    </div>
+  </header>
+
+  <div id="uploadZone" class="upload-zone">
+    <input type="file" id="imageInput" accept="image/*" hidden>
+    <div id="uploadInner">
+      <svg viewBox="0 0 24 24" width="26" height="26" class="upload-icon">
+        <path d="M12 4v12m0-12l-4 4m4-4l4 4M5 18h14" fill="none" stroke="currentColor"
+              stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <p class="upload-text">Drop an image or <span class="upload-link">browse</span></p>
+      <p class="upload-hint">PNG · JPG · WEBP</p>
+    </div>
+    <div id="previewInner" class="hidden">
+      <div class="upload-success">
+        <svg viewBox="0 0 24 24" width="26" height="26" class="check-icon">
+          <path d="M20 6L9 17l-5-5" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <p class="upload-text">Image uploaded</p>
+        <p class="file-name" id="fileName"></p>
+      </div>
+    </div>
+  </div>
+
+  <button id="analyzeBtn" class="analyze-btn" disabled>Analyze Image</button>
+
+  <div id="loading" class="loading hidden">
+    <p id="loadingText">Analyzing…</p>
+  </div>
+
+  <div id="errorBox" class="error-box hidden"></div>
+
+  <section id="result" class="result hidden">
+
+    <div id="verdictBadge" class="verdict"></div>
+
+    <p class="label">Detected claim</p>
+    <p class="claim-text" id="claimText"></p>
+
+    <p class="label">Confidence</p>
+    <div class="meters">
+      <div class="meter-row">
+        <span class="meter-label true-label">TRUE</span>
+        <div class="meter-track"><div class="meter-fill true-fill" id="trueFill"></div></div>
+        <span class="meter-percent" id="truePercent">0%</span>
+      </div>
+      <div class="meter-row">
+        <span class="meter-label false-label">FALSE</span>
+        <div class="meter-track"><div class="meter-fill false-fill" id="falseFill"></div></div>
+        <span class="meter-percent" id="falsePercent">0%</span>
+      </div>
+    </div>
+
+    <p class="label">Explanation</p>
+    <p class="explanation" id="explanationText"></p>
+
+    <button id="resetBtn" class="reset-btn">Check another image</button>
+  </section>
+
+</div>
+
+<script>
+/* ============================================================
+   TruthLens AI — frontend logic
+   Calls the real FastAPI backend at /analyze.
+   ============================================================ */
+
+const imageInput   = document.getElementById("imageInput");
+const uploadZone    = document.getElementById("uploadZone");
+const uploadInner   = document.getElementById("uploadInner");
+const previewInner  = document.getElementById("previewInner");
+const fileNameEl    = document.getElementById("fileName");
+const analyzeBtn    = document.getElementById("analyzeBtn");
+const loading       = document.getElementById("loading");
+const loadingText   = document.getElementById("loadingText");
+const errorBox      = document.getElementById("errorBox");
+const resultBox     = document.getElementById("result");
+const resetBtn      = document.getElementById("resetBtn");
+
+uploadZone.addEventListener("click", () => imageInput.click());
+
+["dragover", "dragenter"].forEach(evt =>
+  uploadZone.addEventListener(evt, e => { e.preventDefault(); uploadZone.classList.add("drag-over"); })
+);
+["dragleave", "drop"].forEach(evt =>
+  uploadZone.addEventListener(evt, e => { e.preventDefault(); uploadZone.classList.remove("drag-over"); })
+);
+uploadZone.addEventListener("drop", e => {
+  const file = e.dataTransfer.files[0];
+  if (file) { imageInput.files = e.dataTransfer.files; showPreview(file); }
+});
+
+imageInput.addEventListener("change", () => {
+  const file = imageInput.files[0];
+  if (file) showPreview(file);
+});
+
+function showPreview(file) {
+  fileNameEl.textContent = file.name;
+  uploadInner.classList.add("hidden");
+  previewInner.classList.remove("hidden");
+  analyzeBtn.disabled = false;
+}
+
+resetBtn.addEventListener("click", () => {
+  imageInput.value = "";
+  uploadInner.classList.remove("hidden");
+  previewInner.classList.add("hidden");
+  resultBox.classList.add("hidden");
+  errorBox.classList.add("hidden");
+  analyzeBtn.disabled = true;
+});
+
+analyzeBtn.addEventListener("click", async () => {
+  analyzeBtn.disabled = true;
+  errorBox.classList.add("hidden");
+  resultBox.classList.add("hidden");
+  loading.classList.remove("hidden");
+  loadingText.textContent = "Reading image…";
+
+  try {
+    const data = await runAnalysis();
+    showResult(data);
+  } catch (err) {
+    errorBox.textContent = "Something went wrong: " + err.message;
+    errorBox.classList.remove("hidden");
+  } finally {
+    loading.classList.add("hidden");
+    analyzeBtn.disabled = false;
+  }
+});
+
+/* ---- Real analysis — calls the FastAPI backend at /analyze ---- */
+async function runAnalysis() {
+  const file = imageInput.files[0];
+  if (!file) throw new Error("No image selected");
+
+  loadingText.textContent = "Reading image & searching the web…";
+
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const res = await fetch("/analyze", { method: "POST", body: formData });
+  const rawText = await res.text();
+
+  let data;
+  try {
+    data = JSON.parse(rawText);
+  } catch {
+    throw new Error(`Server returned an unreadable response (status ${res.status})`);
+  }
+
+  if (!res.ok || data.error) {
+    throw new Error(data.error || `Request failed (status ${res.status})`);
+  }
+
+  return data;
+}
+
+function showResult(data) {
+  document.getElementById("claimText").textContent = data.claim;
+  document.getElementById("explanationText").textContent = data.explanation;
+
+  const truePct = Math.max(0, Math.min(100, Math.round(data.truePercent)));
+  const falsePct = 100 - truePct;
+
+  const badge = document.getElementById("verdictBadge");
+  const verdict = truePct >= 50 ? "True" : "False";
+  badge.textContent = verdict + (truePct >= 50 ? " — likely accurate" : " — likely inaccurate");
+  badge.className = "verdict verdict-" + verdict;
+
+  animateMeter("trueFill", "truePercent", truePct);
+  animateMeter("falseFill", "falsePercent", falsePct);
+
+  resultBox.classList.remove("hidden");
+}
+
+function animateMeter(fillId, labelId, targetPct) {
+  const fill = document.getElementById(fillId);
+  const label = document.getElementById(labelId);
+
+  requestAnimationFrame(() => {
+    fill.style.width = targetPct + "%";
+  });
+
+  const duration = 900;
+  const start = performance.now();
+  function tick(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    label.textContent = Math.round(progress * targetPct) + "%";
+    if (progress < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+</script>
+
+</body>
+</html>

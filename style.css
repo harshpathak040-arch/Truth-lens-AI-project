@@ -1,0 +1,30 @@
+/* ============================================================
+   Frame containment — image can NEVER overflow, no matter its
+   original size. Apply to the upload zone and preview wrapper.
+   ============================================================ */
+
+.app {
+  overflow: hidden; /* nothing inside the whole card can ever escape it */
+}
+
+.upload-zone {
+  overflow: hidden;
+  width: 100%;
+}
+
+.preview-inner {
+  width: 100%;
+  max-height: 150px;   /* hard ceiling on the preview box itself */
+  overflow: hidden;    /* clips anything taller than that, no matter what */
+  border-radius: 8px;
+}
+  
+.preview-inner img {
+  display: block;
+  width: 100%;         /* always fills the container's width exactly */
+  height: 150px;        /* fixed height — never grows past this */
+  max-width: 100%;
+  object-fit: cover;    /* crops the image to fill the frame cleanly, no stretching */
+  border-radius: 8px;
+  border: 1px solid var(--hairline);
+}
