@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TruthLens AI</title>
+<script src="lens.js"></script>
 <style>
   :root {
     --ink: #0D101C;
@@ -26,7 +27,9 @@
     --font-mono: "SF Mono", "JetBrains Mono", ui-monospace, Menlo, monospace;
   }
 
-  * { box-sizing: border-box; }
+  * {
+    box-sizing: border-box;
+  }
 
   body {
     margin: 0;
@@ -47,10 +50,11 @@
     border-radius: 16px;
     padding: 26px;
     box-shadow: 0 20px 50px rgba(0,0,0,0.45);
-    overflow: hidden; /* nothing inside the card can ever escape it */
+    overflow: hidden;
   }
 
   /* Header */
+
   .app-header {
     display: flex;
     align-items: center;
@@ -58,10 +62,25 @@
     margin-bottom: 22px;
   }
 
-  .lens-mark svg { display: block; }
-  .lens-ring-outer { fill: none; stroke: #8A6D2C; stroke-width: 1.4; }
-  .lens-ring-inner { fill: none; stroke: var(--brass); stroke-width: 1.4; }
-  .lens-pupil { fill: var(--brass-bright); }
+  .lens-mark svg {
+    display: block;
+  }
+
+  .lens-ring-outer {
+    fill: none;
+    stroke: #8A6D2C;
+    stroke-width: 1.4;
+  }
+
+  .lens-ring-inner {
+    fill: none;
+    stroke: var(--brass);
+    stroke-width: 1.4;
+  }
+
+  .lens-pupil {
+    fill: var(--brass-bright);
+  }
 
   .app-title h1 {
     font-family: var(--font-display);
@@ -89,6 +108,7 @@
   }
 
   /* Upload zone */
+
   .upload-zone {
     border: 1.5px dashed var(--hairline);
     border-radius: 12px;
@@ -97,7 +117,7 @@
     cursor: pointer;
     background: var(--ink-panel-2);
     transition: border-color 0.2s ease, background 0.2s ease;
-    overflow: hidden;   /* FRAME FIX: clips anything before it can spill out */
+    overflow: hidden;
     width: 100%;
   }
 
@@ -107,13 +127,28 @@
     background: rgba(200, 155, 60, 0.06);
   }
 
-  .upload-icon { color: var(--brass); margin-bottom: 6px; }
+  .upload-icon {
+    color: var(--brass);
+    margin-bottom: 6px;
+  }
 
-  .upload-text { margin: 4px 0 2px 0; font-size: 13.5px; }
-  .upload-link { color: var(--brass-bright); text-decoration: underline; }
-  .upload-hint { margin: 0; font-size: 11px; color: var(--text-faint); font-family: var(--font-mono); }
+  .upload-text {
+    margin: 4px 0 2px 0;
+    font-size: 13.5px;
+  }
 
-  /* Text-only upload confirmation — no image element, so nothing can overflow */
+  .upload-link {
+    color: var(--brass-bright);
+    text-decoration: underline;
+  }
+
+  .upload-hint {
+    margin: 0;
+    font-size: 11px;
+    color: var(--text-faint);
+    font-family: var(--font-mono);
+  }
+
   .preview-inner {
     width: 100%;
   }
@@ -138,7 +173,33 @@
     word-break: break-all;
   }
 
+  /* ============================================================
+     NEW: Screenshot button
+     ============================================================ */
+
+  .screenshot-btn {
+    width: 100%;
+    margin-top: 10px;
+    padding: 11px;
+    background: transparent;
+    color: var(--brass-bright);
+    border: 1px solid var(--brass);
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .screenshot-btn:hover {
+    background: rgba(200, 155, 60, 0.10);
+  }
+
   /* Analyze button */
+
   .analyze-btn {
     width: 100%;
     margin-top: 14px;
@@ -156,20 +217,36 @@
     gap: 8px;
   }
 
-  .analyze-btn:hover:not(:disabled) { background: var(--brass-bright); }
-  .analyze-btn:disabled { background: var(--ink-panel-2); color: var(--text-faint); cursor: not-allowed; }
+  .analyze-btn:hover:not(:disabled) {
+    background: var(--brass-bright);
+  }
+
+  .analyze-btn:disabled {
+    background: var(--ink-panel-2);
+    color: var(--text-faint);
+    cursor: not-allowed;
+  }
 
   /* Loading */
-  .loading { margin-top: 14px; text-align: center; }
+
+  .loading {
+    margin-top: 14px;
+    text-align: center;
+  }
+
   .loading p {
     margin: 0;
     font-size: 12.5px;
     color: var(--text-muted);
     font-family: var(--font-mono);
   }
-  .hidden { display: none !important; }
+
+  .hidden {
+    display: none !important;
+  }
 
   /* Result */
+
   .result {
     margin-top: 20px;
     padding-top: 18px;
@@ -184,10 +261,19 @@
     font-size: 13px;
     margin-bottom: 16px;
   }
-  .verdict-True  { background: rgba(74,222,128,0.12); color: var(--true-color); }
-  .verdict-False { background: rgba(248,113,113,0.12); color: var(--false-color); }
 
-  /* Dual confidence meters — one for True, one for False */
+  .verdict-True {
+    background: rgba(74,222,128,0.12);
+    color: var(--true-color);
+  }
+
+  .verdict-False {
+    background: rgba(248,113,113,0.12);
+    color: var(--false-color);
+  }
+
+  /* Confidence meters */
+
   .meters {
     display: flex;
     flex-direction: column;
@@ -208,8 +294,14 @@
     font-family: var(--font-mono);
     flex-shrink: 0;
   }
-  .meter-label.true-label { color: var(--true-color); }
-  .meter-label.false-label { color: var(--false-color); }
+
+  .meter-label.true-label {
+    color: var(--true-color);
+  }
+
+  .meter-label.false-label {
+    color: var(--false-color);
+  }
 
   .meter-track {
     flex: 1;
@@ -225,8 +317,22 @@
     border-radius: 6px;
     transition: width 0.9s cubic-bezier(.4,0,.2,1);
   }
-  .meter-fill.true-fill { background: linear-gradient(90deg, #2f9e5c, var(--true-color)); }
-  .meter-fill.false-fill { background: linear-gradient(90deg, #b34848, var(--false-color)); }
+
+  .meter-fill.true-fill {
+    background: linear-gradient(
+      90deg,
+      #2f9e5c,
+      var(--true-color)
+    );
+  }
+
+  .meter-fill.false-fill {
+    background: linear-gradient(
+      90deg,
+      #b34848,
+      var(--false-color)
+    );
+  }
 
   .meter-percent {
     width: 40px;
@@ -271,7 +377,11 @@
     font-size: 13px;
     cursor: pointer;
   }
-  .reset-btn:hover { border-color: var(--brass); color: var(--brass-bright); }
+
+  .reset-btn:hover {
+    border-color: var(--brass);
+    color: var(--brass-bright);
+  }
 
   .error-box {
     margin-top: 14px;
@@ -284,217 +394,295 @@
   }
 </style>
 </head>
+
 <body>
 
 <div class="app">
 
+  <!-- Header -->
   <header class="app-header">
+
     <div class="lens-mark" aria-hidden="true">
+
       <svg viewBox="0 0 40 40" width="34" height="34">
-        <circle cx="20" cy="20" r="17" class="lens-ring-outer"/>
-        <circle cx="20" cy="20" r="11" class="lens-ring-inner"/>
-        <circle cx="20" cy="20" r="4" class="lens-pupil"/>
+
+        <circle
+          cx="20"
+          cy="20"
+          r="17"
+          class="lens-ring-outer"
+        />
+
+        <circle
+          cx="20"
+          cy="20"
+          r="11"
+          class="lens-ring-inner"
+        />
+
+        <circle
+          cx="20"
+          cy="20"
+          r="4"
+          class="lens-pupil"
+        />
+
       </svg>
+
     </div>
+
     <div class="app-title">
-      <h1>TruthLens<span class="ai-tag">AI</span></h1>
-      <p class="tagline">Focus on the claim. Verify the facts.</p>
+
+      <h1>
+        TruthLens<span class="ai-tag">AI</span>
+      </h1>
+
+      <p class="tagline">
+        Focus on the claim. Verify the facts.
+      </p>
+
     </div>
+
   </header>
 
+
+  <!-- Existing upload section -->
   <div id="uploadZone" class="upload-zone">
-    <input type="file" id="imageInput" accept="image/*" hidden>
+
+    <input
+      type="file"
+      id="imageInput"
+      accept="image/*"
+      hidden
+    >
+
     <div id="uploadInner">
-      <svg viewBox="0 0 24 24" width="26" height="26" class="upload-icon">
-        <path d="M12 4v12m0-12l-4 4m4-4l4 4M5 18h14" fill="none" stroke="currentColor"
-              stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+
+      <svg
+        viewBox="0 0 24 24"
+        width="26"
+        height="26"
+        class="upload-icon"
+      >
+
+        <path
+          d="M12 4v12m0-12l-4 4m4-4l4 4M5 18h14"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+
       </svg>
-      <p class="upload-text">Drop an image or <span class="upload-link">browse</span></p>
-      <p class="upload-hint">PNG · JPG · WEBP</p>
+
+      <p class="upload-text">
+        Drop an image or
+        <span class="upload-link">browse</span>
+      </p>
+
+      <p class="upload-hint">
+        PNG · JPG · WEBP
+      </p>
+
     </div>
+
+
     <div id="previewInner" class="hidden">
+
       <div class="upload-success">
-        <svg viewBox="0 0 24 24" width="26" height="26" class="check-icon">
-          <path d="M20 6L9 17l-5-5" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+        <svg
+          viewBox="0 0 24 24"
+          width="26"
+          height="26"
+          class="check-icon"
+        >
+
+          <path
+            d="M20 6L9 17l-5-5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+
         </svg>
-        <p class="upload-text">Image uploaded</p>
-        <p class="file-name" id="fileName"></p>
+
+        <p class="upload-text">
+          Image uploaded
+        </p>
+
+        <p
+          class="file-name"
+          id="fileName"
+        ></p>
+
       </div>
+
     </div>
+
   </div>
 
-  <button id="analyzeBtn" class="analyze-btn" disabled>Analyze Image</button>
 
-  <div id="loading" class="loading hidden">
-    <p id="loadingText">Analyzing…</p>
+  <!-- ========================================================
+       NEW: Browser Extension Screenshot Button
+       ======================================================== -->
+
+  <button
+    id="captureBtn"
+    class="screenshot-btn"
+    type="button"
+  >
+    📸 Capture Current Tab
+  </button>
+
+
+  <!-- Existing Analyze button -->
+
+  <button
+    id="analyzeBtn"
+    class="analyze-btn"
+    disabled
+  >
+    Analyze Image
+  </button>
+
+
+  <!-- Loading -->
+
+  <div
+    id="loading"
+    class="loading hidden"
+  >
+
+    <p id="loadingText">
+      Analyzing…
+    </p>
+
   </div>
 
-  <div id="errorBox" class="error-box hidden"></div>
 
-  <section id="result" class="result hidden">
+  <!-- Error -->
 
-    <div id="verdictBadge" class="verdict"></div>
+  <div
+    id="errorBox"
+    class="error-box hidden"
+  ></div>
 
-    <p class="label">Detected claim</p>
-    <p class="claim-text" id="claimText"></p>
 
-    <p class="label">Confidence</p>
+  <!-- Result -->
+
+  <section
+    id="result"
+    class="result hidden"
+  >
+
+    <div
+      id="verdictBadge"
+      class="verdict"
+    ></div>
+
+
+    <p class="label">
+      Detected claim
+    </p>
+
+    <p
+      class="claim-text"
+      id="claimText"
+    ></p>
+
+
+    <p class="label">
+      Confidence
+    </p>
+
     <div class="meters">
+
       <div class="meter-row">
-        <span class="meter-label true-label">TRUE</span>
-        <div class="meter-track"><div class="meter-fill true-fill" id="trueFill"></div></div>
-        <span class="meter-percent" id="truePercent">0%</span>
+
+        <span class="meter-label true-label">
+          TRUE
+        </span>
+
+        <div class="meter-track">
+
+          <div
+            class="meter-fill true-fill"
+            id="trueFill"
+          ></div>
+
+        </div>
+
+        <span
+          class="meter-percent"
+          id="truePercent"
+        >
+          0%
+        </span>
+
       </div>
+
+
       <div class="meter-row">
-        <span class="meter-label false-label">FALSE</span>
-        <div class="meter-track"><div class="meter-fill false-fill" id="falseFill"></div></div>
-        <span class="meter-percent" id="falsePercent">0%</span>
+
+        <span class="meter-label false-label">
+          FALSE
+        </span>
+
+        <div class="meter-track">
+
+          <div
+            class="meter-fill false-fill"
+            id="falseFill"
+          ></div>
+
+        </div>
+
+        <span
+          class="meter-percent"
+          id="falsePercent"
+        >
+          0%
+        </span>
+
       </div>
+
     </div>
 
-    <p class="label">Explanation</p>
-    <p class="explanation" id="explanationText"></p>
 
-    <button id="resetBtn" class="reset-btn">Check another image</button>
+    <p class="label">
+      Explanation
+    </p>
+
+    <p
+      class="explanation"
+      id="explanationText"
+    ></p>
+
+
+    <button
+      id="resetBtn"
+      class="reset-btn"
+      type="button"
+    >
+      Check another image
+    </button>
+
   </section>
 
 </div>
 
-<script>
-/* ============================================================
-   TruthLens AI — frontend logic
-   Calls the real FastAPI backend at /analyze.
-   ============================================================ */
 
-const imageInput   = document.getElementById("imageInput");
-const uploadZone    = document.getElementById("uploadZone");
-const uploadInner   = document.getElementById("uploadInner");
-const previewInner  = document.getElementById("previewInner");
-const fileNameEl    = document.getElementById("fileName");
-const analyzeBtn    = document.getElementById("analyzeBtn");
-const loading       = document.getElementById("loading");
-const loadingText   = document.getElementById("loadingText");
-const errorBox      = document.getElementById("errorBox");
-const resultBox     = document.getElementById("result");
-const resetBtn      = document.getElementById("resetBtn");
+<!-- ============================================================
+     IMPORTANT:
+     Use your external lens.js file.
+     Do NOT keep the old inline JavaScript here.
+     ============================================================ -->
 
-uploadZone.addEventListener("click", () => imageInput.click());
-
-["dragover", "dragenter"].forEach(evt =>
-  uploadZone.addEventListener(evt, e => { e.preventDefault(); uploadZone.classList.add("drag-over"); })
-);
-["dragleave", "drop"].forEach(evt =>
-  uploadZone.addEventListener(evt, e => { e.preventDefault(); uploadZone.classList.remove("drag-over"); })
-);
-uploadZone.addEventListener("drop", e => {
-  const file = e.dataTransfer.files[0];
-  if (file) { imageInput.files = e.dataTransfer.files; showPreview(file); }
-});
-
-imageInput.addEventListener("change", () => {
-  const file = imageInput.files[0];
-  if (file) showPreview(file);
-});
-
-function showPreview(file) {
-  fileNameEl.textContent = file.name;
-  uploadInner.classList.add("hidden");
-  previewInner.classList.remove("hidden");
-  analyzeBtn.disabled = false;
-}
-
-resetBtn.addEventListener("click", () => {
-  imageInput.value = "";
-  uploadInner.classList.remove("hidden");
-  previewInner.classList.add("hidden");
-  resultBox.classList.add("hidden");
-  errorBox.classList.add("hidden");
-  analyzeBtn.disabled = true;
-});
-
-analyzeBtn.addEventListener("click", async () => {
-  analyzeBtn.disabled = true;
-  errorBox.classList.add("hidden");
-  resultBox.classList.add("hidden");
-  loading.classList.remove("hidden");
-  loadingText.textContent = "Reading image…";
-
-  try {
-    const data = await runAnalysis();
-    showResult(data);
-  } catch (err) {
-    errorBox.textContent = "Something went wrong: " + err.message;
-    errorBox.classList.remove("hidden");
-  } finally {
-    loading.classList.add("hidden");
-    analyzeBtn.disabled = false;
-  }
-});
-
-/* ---- Real analysis — calls the FastAPI backend at /analyze ---- */
-async function runAnalysis() {
-  const file = imageInput.files[0];
-  if (!file) throw new Error("No image selected");
-
-  loadingText.textContent = "Reading image & searching the web…";
-
-  const formData = new FormData();
-  formData.append("image", file);
-
-  const res = await fetch("/analyze", { method: "POST", body: formData });
-  const rawText = await res.text();
-
-  let data;
-  try {
-    data = JSON.parse(rawText);
-  } catch {
-    throw new Error(`Server returned an unreadable response (status ${res.status})`);
-  }
-
-  if (!res.ok || data.error) {
-    throw new Error(data.error || `Request failed (status ${res.status})`);
-  }
-
-  return data;
-}
-
-function showResult(data) {
-  document.getElementById("claimText").textContent = data.claim;
-  document.getElementById("explanationText").textContent = data.explanation;
-
-  const truePct = Math.max(0, Math.min(100, Math.round(data.truePercent)));
-  const falsePct = 100 - truePct;
-
-  const badge = document.getElementById("verdictBadge");
-  const verdict = truePct >= 50 ? "True" : "False";
-  badge.textContent = verdict + (truePct >= 50 ? " — likely accurate" : " — likely inaccurate");
-  badge.className = "verdict verdict-" + verdict;
-
-  animateMeter("trueFill", "truePercent", truePct);
-  animateMeter("falseFill", "falsePercent", falsePct);
-
-  resultBox.classList.remove("hidden");
-}
-
-function animateMeter(fillId, labelId, targetPct) {
-  const fill = document.getElementById(fillId);
-  const label = document.getElementById(labelId);
-
-  requestAnimationFrame(() => {
-    fill.style.width = targetPct + "%";
-  });
-
-  const duration = 900;
-  const start = performance.now();
-  function tick(now) {
-    const progress = Math.min((now - start) / duration, 1);
-    label.textContent = Math.round(progress * targetPct) + "%";
-    if (progress < 1) requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
-}
-</script>
+<script src="lens.js"></script>
 
 </body>
 </html>
