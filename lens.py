@@ -6,6 +6,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse, FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image
 
 from google import genai
@@ -21,7 +22,25 @@ BASE_DIR = Path(__file__).resolve().parent
 
 app = FastAPI(title="TruthLens AI")
 
-# Load API key from key.env
+
+# ============================================================
+# CORS
+# Allows the Chrome extension to communicate with FastAPI
+# ============================================================
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+# ============================================================
+# LOAD API KEY
+# ============================================================
+
 load_dotenv(BASE_DIR / "key.env")
 
 API_KEY = os.environ.get("GEMINI_API_KEY")
@@ -34,6 +53,7 @@ client = genai.Client(api_key=API_KEY) if API_KEY else None
 # ============================================================
 
 # False = use real Gemini API
+# True = use fake demo data
 DEMO_MODE = False
 
 # Gemini model
@@ -45,7 +65,6 @@ GEMINI_SUPPORTED_TYPES = {
     "image/webp",
     "image/gif"
 }
-
 
 MAX_DIMENSION = 1568
 
@@ -73,10 +92,14 @@ def demo_analyze():
     import random
 
     return {
-        "claim": "Drinking hot lemon water every morning cures the common cold within 24 hours.",
+        "claim": (
+            "Drinking hot lemon water every morning "
+            "cures the common cold within 24 hours."
+        ),
 
         "explanation": (
-            "DEMO MODE is active. This is fake data and not a real analysis."
+            "DEMO MODE is active. "
+            "This is fake data and not a real analysis."
         ),
 
         "truePercent": random.randint(5, 95)
@@ -170,6 +193,8 @@ Return ONLY the JSON object.
     )
 
     return parse_json_safely(response.text)
+
+
 # ============================================================
 # STAGE 2
 # FACT CHECK USING GOOGLE SEARCH
@@ -199,37 +224,23 @@ Return ONLY valid JSON in this exact format:
 Rules for true_percent:
 
 90-100 = strongly confirmed true
-
 60-89 = mostly true / true with minor caveats
-
 40-59 = mixed, unclear, or unverifiable
-
 11-39 = mostly false / misleading
-
 0-10 = strongly confirmed false
 
 Write the explanation in the same language as the claim.
 """
 
-    
-
     config = types.GenerateContentConfig(
-
-        
-
         response_mime_type="application/json",
-
         temperature=0.2,
-
         max_output_tokens=1000
     )
 
     response = client.models.generate_content(
-
         model=MODEL,
-
         contents=prompt,
-
         config=config
     )
 
@@ -241,9 +252,11 @@ Write the explanation in the same language as the claim.
 # ============================================================
 # SAFE JSON PARSER
 # ============================================================
+
 def parse_json_safely(raw_text):
 
     if not raw_text:
+
         return {
             "error": "Empty response from Gemini"
         }
@@ -252,6 +265,7 @@ def parse_json_safely(raw_text):
 
     # Remove markdown code fences
     if cleaned.startswith("```"):
+
         lines = cleaned.splitlines()
 
         # Remove first line: ``` or ```json
@@ -264,19 +278,21 @@ def parse_json_safely(raw_text):
 
         cleaned = "\n".join(lines).strip()
 
-    # ----------------------------------------------------
+    # --------------------------------------------------------
     # 1. Try direct JSON
-    # ----------------------------------------------------
+    # --------------------------------------------------------
 
     try:
+
         return json.loads(cleaned)
 
     except json.JSONDecodeError:
+
         pass
 
-    # ----------------------------------------------------
+    # --------------------------------------------------------
     # 2. Try extracting JSON object from extra text
-    # ----------------------------------------------------
+    # --------------------------------------------------------
 
     start = cleaned.find("{")
     end = cleaned.rfind("}")
@@ -286,19 +302,22 @@ def parse_json_safely(raw_text):
         json_text = cleaned[start:end + 1]
 
         try:
+
             return json.loads(json_text)
 
         except json.JSONDecodeError:
+
             pass
 
-    # ----------------------------------------------------
+    # --------------------------------------------------------
     # 3. Return useful error
-    # ----------------------------------------------------
+    # --------------------------------------------------------
 
     return {
         "error": "Could not parse Gemini response",
         "raw": raw_text
     }
+
 
 # ============================================================
 # HOME
@@ -313,7 +332,7 @@ def home():
 
 
 # ============================================================
-# ANALYZE
+# ANALYZE IMAGE
 # ============================================================
 
 @app.post("/analyze")
@@ -322,6 +341,10 @@ async def analyze(
 ):
 
     try:
+
+        # ----------------------------------------------------
+        # FILE CHECK
+        # ----------------------------------------------------
 
         if not image.filename:
 
@@ -399,14 +422,20 @@ async def analyze(
             )
 
         # ----------------------------------------------------
-        # EXTRACT CLAIM
+        # ANALYZE IMAGE
         # ----------------------------------------------------
 
-        # --- Analyze image + fact-check in ONE Gemini request ---
-        result = analyze_image(image_bytes, media_type)
+        result = analyze_image(
+            image_bytes,
+            media_type
+        )
 
         if "error" in result:
-            return JSONResponse(result, status_code=502)
+
+            return JSONResponse(
+                result,
+                status_code=502
+            )
 
         # ----------------------------------------------------
         # TRUE PERCENT
@@ -438,7 +467,10 @@ async def analyze(
 
         return {
 
-            "claim": result.get("claim", ""),
+            "claim": result.get(
+                "claim",
+                ""
+            ),
 
             "explanation": result.get(
                 "explanation",
@@ -462,6 +494,37 @@ async def analyze(
             },
             status_code=500
         )
+
+
+# ============================================================
+# BROWSER EXTENSION API
+# ============================================================
+# The Chrome extension sends screenshots here.
+#
+# It uses the same analysis function as /analyze.
+# ============================================================
+
+@app.post("/api/analyze-file")
+async def analyze_file(
+    image: UploadFile = File(...)
+):
+
+    return await analyze(image)
+
+
+# ============================================================
+# HEALTH CHECK
+# ============================================================
+# Useful for checking whether TruthLens backend is running.
+# ============================================================
+
+@app.get("/api/health")
+def health_check():
+
+    return {
+        "status": "online",
+        "service": "TruthLens AI"
+    }
 
 
 # ============================================================
