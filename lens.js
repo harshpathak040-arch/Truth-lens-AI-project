@@ -113,3 +113,43 @@ function escapeHtml(text) {
     div.textContent = text;
     return div.innerHTML;
 }
+// ============================================================
+// HISTORY
+// ============================================================
+
+const historyBtn = document.getElementById("historyBtn");
+const historyDiv = document.getElementById("history");
+
+if (historyBtn) {
+    historyBtn.addEventListener("click", () => {
+
+        chrome.storage.local.get({ history: [] }, (result) => {
+
+            const history = result.history;
+
+            if (history.length === 0) {
+                historyDiv.innerHTML = "<p>No history yet.</p>";
+                return;
+            }
+
+            historyDiv.innerHTML = history.map(item => `
+                <div class="history-item">
+                    <strong>${escapeHtml(item.claim)}</strong>
+
+                    <p>
+                        Truth Score:
+                        <strong>${item.truePercent}%</strong>
+                    </p>
+
+                    <small>
+                        ${new Date(item.timestamp).toLocaleString()}
+                    </small>
+
+                    <p>${escapeHtml(item.explanation)}</p>
+                </div>
+            `).join("");
+
+        });
+
+    });
+}
