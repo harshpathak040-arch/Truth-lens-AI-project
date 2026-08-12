@@ -3,28 +3,103 @@
    original size. Apply to the upload zone and preview wrapper.
    ============================================================ */
 
+/* Popup size */
 .app {
-  overflow: hidden; /* nothing inside the whole card can ever escape it */
+    min-height: 560px;
 }
 
+/* Upload / preview */
 .upload-zone {
-  overflow: hidden;
-  width: 100%;
+    overflow: hidden;
+    width: 100%;
 }
 
 .preview-inner {
-  width: 100%;
-  max-height: 150px;   /* hard ceiling on the preview box itself */
-  overflow: hidden;    /* clips anything taller than that, no matter what */
-  border-radius: 8px;
+    width: 100%;
+    max-height: 150px;
+    overflow: hidden;
+    border-radius: 8px;
 }
-  
+
 .preview-inner img {
-  display: block;
-  width: 100%;         /* always fills the container's width exactly */
-  height: 150px;        /* fixed height — never grows past this */
-  max-width: 100%;
-  object-fit: cover;    /* crops the image to fill the frame cleanly, no stretching */
-  border-radius: 8px;
-  border: 1px solid var(--hairline);
+    display: block;
+    width: 100%;
+    height: 150px;
+    max-width: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--hairline);
+}
+
+
+/* ================================
+   TRUE / FALSE CONFIDENCE METER
+   ================================ */
+
+.confidence {
+    margin: 24px 0;
+}
+
+.section-title {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+}
+
+.confidence-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.true-label {
+    color: var(--true);
+}
+
+.false-label {
+    color: var(--false);
+}
+
+.confidence-labels strong {
+    display: block;
+    font-size: 24px;
+    margin-top: 3px;
+}
+
+.confidence-bar {
+    width: 100%;
+    height: 12px;
+    background: var(--false);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.true-bar {
+    height: 100%;
+    background: var(--true);
+    border-radius: 10px;
+    transition: width 0.6s ease;
+}
+
+
+/* ================================
+   HISTORY
+   ================================ */
+
+.history-item {
+    padding: 14px;
+    margin-bottom: 10px;
+    border: 1px solid var(--hairline);
+    border-radius: 10px;
+    background: var(--panel-2);
+}
+
+.history-item small {
+    color: var(--muted);
+}
+
+.history-item p {
+    margin: 6px 0;
 }
