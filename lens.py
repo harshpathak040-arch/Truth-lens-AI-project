@@ -28,6 +28,8 @@ app = FastAPI(title="TruthLens AI")
 # Allows the Chrome extension to communicate with FastAPI
 # ============================================================
 
+from fastapi.middleware.cors import CORSMiddleware
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
