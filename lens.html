@@ -1,688 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TruthLens AI</title>
-<script src="lens.js"></script>
-<style>
-  :root {
-    --ink: #0D101C;
-    --ink-panel: #161A2C;
-    --ink-panel-2: #1D2238;
-    --hairline: #2A2F47;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TruthLens AI</title>
 
-    --brass: #C89B3C;
-    --brass-bright: #E8C468;
+    <style>
+        :root {
+            --ink: #0D101C;
+            --panel: #161A2C;
+            --panel-2: #1D2238;
+            --border: #2A2F47;
+            --brass: #C89B3C;
+            --brass-bright: #E8C468;
+            --text: #EDEEF3;
+            --muted: #8A8FA3;
+            --true: #4ADE80;
+            --false: #F87171;
+        }
 
-    --text-primary: #EDEEF3;
-    --text-muted: #8A8FA3;
-    --text-faint: #5B5F72;
+        * {
+            box-sizing: border-box;
+        }
 
-    --true-color: #4ADE80;
-    --false-color: #F87171;
+        body {
+            margin: 0;
+            width: 420px;
+            min-height: 200px;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: var(--ink);
+            color: var(--text);
+        }
 
-    --font-display: Georgia, "Iowan Old Style", serif;
-    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    --font-mono: "SF Mono", "JetBrains Mono", ui-monospace, Menlo, monospace;
-  }
+        .app {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 22px;
+        }
 
-  * {
-    box-sizing: border-box;
-  }
+        .header {
+            margin-bottom: 18px;
+        }
 
-  body {
-    margin: 0;
-    font-family: var(--font-body);
-    background: var(--ink);
-    color: var(--text-primary);
-    display: flex;
-    justify-content: center;
-    padding: 40px 16px;
-    min-height: 100vh;
-  }
+        h1 {
+            margin: 0;
+            font-family: Georgia, serif;
+            font-size: 21px;
+        }
 
-  .app {
-    width: 100%;
-    max-width: 420px;
-    background: var(--ink-panel);
-    border: 1px solid var(--hairline);
-    border-radius: 16px;
-    padding: 26px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.45);
-    overflow: hidden;
-  }
+        .ai-tag {
+            margin-left: 5px;
+            padding: 2px 5px;
+            border-radius: 4px;
+            background: var(--brass);
+            color: var(--ink);
+            font-size: 11px;
+        }
 
-  /* Header */
+        .tagline {
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
 
-  .app-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 22px;
-  }
+        #captureBtn {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--brass);
+            border-radius: 10px;
+            background: transparent;
+            color: var(--brass-bright);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
 
-  .lens-mark svg {
-    display: block;
-  }
+        #captureBtn:hover {
+            background: rgba(200, 155, 60, 0.10);
+        }
 
-  .lens-ring-outer {
-    fill: none;
-    stroke: #8A6D2C;
-    stroke-width: 1.4;
-  }
+        #captureBtn:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
 
-  .lens-ring-inner {
-    fill: none;
-    stroke: var(--brass);
-    stroke-width: 1.4;
-  }
+        #status {
+            margin-top: 14px;
+            color: var(--muted);
+            font-size: 12px;
+            text-align: center;
+        }
 
-  .lens-pupil {
-    fill: var(--brass-bright);
-  }
+        #result {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+            font-size: 13px;
+            line-height: 1.5;
+        }
 
-  .app-title h1 {
-    font-family: var(--font-display);
-    font-size: 21px;
-    margin: 0;
-  }
+        .claim,
+        .truth-score,
+        .explanation {
+            margin-bottom: 12px;
+        }
 
-  .ai-tag {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--ink);
-    background: var(--brass);
-    padding: 1px 5px;
-    border-radius: 4px;
-    margin-left: 5px;
-    vertical-align: middle;
-  }
+        .claim p,
+        .truth-score p,
+        .explanation p {
+            margin: 4px 0 0;
+        }
 
-  .tagline {
-    margin: 2px 0 0 0;
-    font-size: 12px;
-    color: var(--text-muted);
-    font-style: italic;
-    font-family: var(--font-display);
-  }
-
-  /* Upload zone */
-
-  .upload-zone {
-    border: 1.5px dashed var(--hairline);
-    border-radius: 12px;
-    padding: 24px 16px;
-    text-align: center;
-    cursor: pointer;
-    background: var(--ink-panel-2);
-    transition: border-color 0.2s ease, background 0.2s ease;
-    overflow: hidden;
-    width: 100%;
-  }
-
-  .upload-zone:hover,
-  .upload-zone.drag-over {
-    border-color: var(--brass);
-    background: rgba(200, 155, 60, 0.06);
-  }
-
-  .upload-icon {
-    color: var(--brass);
-    margin-bottom: 6px;
-  }
-
-  .upload-text {
-    margin: 4px 0 2px 0;
-    font-size: 13.5px;
-  }
-
-  .upload-link {
-    color: var(--brass-bright);
-    text-decoration: underline;
-  }
-
-  .upload-hint {
-    margin: 0;
-    font-size: 11px;
-    color: var(--text-faint);
-    font-family: var(--font-mono);
-  }
-
-  .preview-inner {
-    width: 100%;
-  }
-
-  .upload-success {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .check-icon {
-    color: var(--true-color);
-    margin-bottom: 4px;
-  }
-
-  .file-name {
-    margin: 8px 0 0 0;
-    font-size: 11.5px;
-    color: var(--text-muted);
-    font-family: var(--font-mono);
-    word-break: break-all;
-  }
-
-  /* ============================================================
-     NEW: Screenshot button
-     ============================================================ */
-
-  .screenshot-btn {
-    width: 100%;
-    margin-top: 10px;
-    padding: 11px;
-    background: transparent;
-    color: var(--brass-bright);
-    border: 1px solid var(--brass);
-    border-radius: 10px;
-    font-size: 13.5px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .screenshot-btn:hover {
-    background: rgba(200, 155, 60, 0.10);
-  }
-
-  /* Analyze button */
-
-  .analyze-btn {
-    width: 100%;
-    margin-top: 14px;
-    padding: 12px;
-    background: var(--brass);
-    color: var(--ink);
-    border: none;
-    border-radius: 10px;
-    font-size: 14.5px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .analyze-btn:hover:not(:disabled) {
-    background: var(--brass-bright);
-  }
-
-  .analyze-btn:disabled {
-    background: var(--ink-panel-2);
-    color: var(--text-faint);
-    cursor: not-allowed;
-  }
-
-  /* Loading */
-
-  .loading {
-    margin-top: 14px;
-    text-align: center;
-  }
-
-  .loading p {
-    margin: 0;
-    font-size: 12.5px;
-    color: var(--text-muted);
-    font-family: var(--font-mono);
-  }
-
-  .hidden {
-    display: none !important;
-  }
-
-  /* Result */
-
-  .result {
-    margin-top: 20px;
-    padding-top: 18px;
-    border-top: 1px solid var(--hairline);
-  }
-
-  .verdict {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 13px;
-    margin-bottom: 16px;
-  }
-
-  .verdict-True {
-    background: rgba(74,222,128,0.12);
-    color: var(--true-color);
-  }
-
-  .verdict-False {
-    background: rgba(248,113,113,0.12);
-    color: var(--false-color);
-  }
-
-  /* Confidence meters */
-
-  .meters {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    margin-bottom: 18px;
-  }
-
-  .meter-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .meter-label {
-    width: 46px;
-    font-size: 12px;
-    font-weight: 600;
-    font-family: var(--font-mono);
-    flex-shrink: 0;
-  }
-
-  .meter-label.true-label {
-    color: var(--true-color);
-  }
-
-  .meter-label.false-label {
-    color: var(--false-color);
-  }
-
-  .meter-track {
-    flex: 1;
-    height: 12px;
-    background: var(--ink-panel-2);
-    border-radius: 6px;
-    overflow: hidden;
-  }
-
-  .meter-fill {
-    height: 100%;
-    width: 0%;
-    border-radius: 6px;
-    transition: width 0.9s cubic-bezier(.4,0,.2,1);
-  }
-
-  .meter-fill.true-fill {
-    background: linear-gradient(
-      90deg,
-      #2f9e5c,
-      var(--true-color)
-    );
-  }
-
-  .meter-fill.false-fill {
-    background: linear-gradient(
-      90deg,
-      #b34848,
-      var(--false-color)
-    );
-  }
-
-  .meter-percent {
-    width: 40px;
-    text-align: right;
-    font-size: 12.5px;
-    font-family: var(--font-mono);
-    color: var(--text-muted);
-    flex-shrink: 0;
-  }
-
-  .label {
-    font-size: 10.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: var(--text-faint);
-    margin-bottom: 4px;
-    display: block;
-  }
-
-  .claim-text {
-    font-size: 13.5px;
-    line-height: 1.5;
-    font-family: var(--font-display);
-    font-style: italic;
-    margin: 0 0 14px 0;
-  }
-
-  .explanation {
-    font-size: 13px;
-    line-height: 1.55;
-    color: var(--text-muted);
-    margin: 0 0 16px 0;
-  }
-
-  .reset-btn {
-    width: 100%;
-    padding: 10px;
-    background: transparent;
-    color: var(--text-muted);
-    border: 1px solid var(--hairline);
-    border-radius: 10px;
-    font-size: 13px;
-    cursor: pointer;
-  }
-
-  .reset-btn:hover {
-    border-color: var(--brass);
-    color: var(--brass-bright);
-  }
-
-  .error-box {
-    margin-top: 14px;
-    padding: 11px 12px;
-    background: rgba(248,113,113,0.12);
-    border: 1px solid rgba(248,113,113,0.3);
-    border-radius: 10px;
-    color: var(--false-color);
-    font-size: 12.5px;
-  }
-</style>
+        .error {
+            color: var(--false);
+        }
+    </style>
 </head>
 
 <body>
-
-<div class="app">
-
-  <!-- Header -->
-  <header class="app-header">
-
-    <div class="lens-mark" aria-hidden="true">
-
-      <svg viewBox="0 0 40 40" width="34" height="34">
-
-        <circle
-          cx="20"
-          cy="20"
-          r="17"
-          class="lens-ring-outer"
-        />
-
-        <circle
-          cx="20"
-          cy="20"
-          r="11"
-          class="lens-ring-inner"
-        />
-
-        <circle
-          cx="20"
-          cy="20"
-          r="4"
-          class="lens-pupil"
-        />
-
-      </svg>
-
-    </div>
-
-    <div class="app-title">
-
-      <h1>
-        TruthLens<span class="ai-tag">AI</span>
-      </h1>
-
-      <p class="tagline">
-        Focus on the claim. Verify the facts.
-      </p>
-
-    </div>
-
-  </header>
-
-
-  <!-- Existing upload section -->
-  <div id="uploadZone" class="upload-zone">
-
-    <input
-      type="file"
-      id="imageInput"
-      accept="image/*"
-      hidden
-    >
-
-    <div id="uploadInner">
-
-      <svg
-        viewBox="0 0 24 24"
-        width="26"
-        height="26"
-        class="upload-icon"
-      >
-
-        <path
-          d="M12 4v12m0-12l-4 4m4-4l4 4M5 18h14"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.6"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-
-      </svg>
-
-      <p class="upload-text">
-        Drop an image or
-        <span class="upload-link">browse</span>
-      </p>
-
-      <p class="upload-hint">
-        PNG · JPG · WEBP
-      </p>
-
-    </div>
-
-
-    <div id="previewInner" class="hidden">
-
-      <div class="upload-success">
-
-        <svg
-          viewBox="0 0 24 24"
-          width="26"
-          height="26"
-          class="check-icon"
-        >
-
-          <path
-            d="M20 6L9 17l-5-5"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-
-        </svg>
-
-        <p class="upload-text">
-          Image uploaded
-        </p>
-
-        <p
-          class="file-name"
-          id="fileName"
-        ></p>
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <!-- ========================================================
-       NEW: Browser Extension Screenshot Button
-       ======================================================== -->
-
-  <button
-    id="captureBtn"
-    class="screenshot-btn"
-    type="button"
-  >
-    📸 Capture Current Tab
-  </button>
-
-
-  <!-- Existing Analyze button -->
-
-  <button
-    id="analyzeBtn"
-    class="analyze-btn"
-    disabled
-  >
-    Analyze Image
-  </button>
-
-
-  <!-- Loading -->
-
-  <div
-    id="loading"
-    class="loading hidden"
-  >
-
-    <p id="loadingText">
-      Analyzing…
-    </p>
-
-  </div>
-
-
-  <!-- Error -->
-
-  <div
-    id="errorBox"
-    class="error-box hidden"
-  ></div>
-
-
-  <!-- Result -->
-
-  <section
-    id="result"
-    class="result hidden"
-  >
-
-    <div
-      id="verdictBadge"
-      class="verdict"
-    ></div>
-
-
-    <p class="label">
-      Detected claim
-    </p>
-
-    <p
-      class="claim-text"
-      id="claimText"
-    ></p>
-
-
-    <p class="label">
-      Confidence
-    </p>
-
-    <div class="meters">
-
-      <div class="meter-row">
-
-        <span class="meter-label true-label">
-          TRUE
-        </span>
-
-        <div class="meter-track">
-
-          <div
-            class="meter-fill true-fill"
-            id="trueFill"
-          ></div>
-
+    <div class="app">
+
+        <div class="header">
+            <h1>TruthLens <span class="ai-tag">AI</span></h1>
+            <p class="tagline">Focus on the claim. Verify the facts.</p>
         </div>
 
-        <span
-          class="meter-percent"
-          id="truePercent"
-        >
-          0%
-        </span>
+        <button id="captureBtn" type="button">
+            📸 Capture Current Tab
+        </button>
 
-      </div>
+        <div id="status"></div>
 
-
-      <div class="meter-row">
-
-        <span class="meter-label false-label">
-          FALSE
-        </span>
-
-        <div class="meter-track">
-
-          <div
-            class="meter-fill false-fill"
-            id="falseFill"
-          ></div>
-
-        </div>
-
-        <span
-          class="meter-percent"
-          id="falsePercent"
-        >
-          0%
-        </span>
-
-      </div>
+        <div id="result"></div>
 
     </div>
 
-
-    <p class="label">
-      Explanation
-    </p>
-
-    <p
-      class="explanation"
-      id="explanationText"
-    ></p>
-
-
-    <button
-      id="resetBtn"
-      class="reset-btn"
-      type="button"
-    >
-      Check another image
-    </button>
-
-  </section>
-
-</div>
-
-
-<!-- ============================================================
-     IMPORTANT:
-     Use your external lens.js file.
-     Do NOT keep the old inline JavaScript here.
-     ============================================================ -->
-
-<script src="lens.js"></script>
-
+    <!-- Load JavaScript only once, after the HTML elements exist -->
+    <script src="lens.js"></script>
 </body>
 </html>
