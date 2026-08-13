@@ -136,3 +136,25 @@ if (historyBtn) {
 
     });
 }
+// ============================================================
+// HISTORY
+// ============================================================
+
+function saveToHistory(data) {
+    const history = JSON.parse(
+        localStorage.getItem("truthlens_history") || "[]"
+    );
+
+    history.unshift({
+        claim: data.claim || "No claim found",
+        truePercent: data.truePercent ?? 0,
+        explanation: data.explanation || "No explanation available.",
+        timestamp: new Date().toISOString()
+    });
+
+    // Keep latest 50 results
+    localStorage.setItem(
+        "truthlens_history",
+        JSON.stringify(history.slice(0, 50))
+    );
+}
