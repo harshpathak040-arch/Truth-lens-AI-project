@@ -103,4 +103,25 @@
 .history-item p {
     margin: 6px 0;
 }
-thanks for using 
+.history-btn {
+    position: fixed;
+    right: 18px;
+    bottom: 15px;
+
+    padding: 6px 10px;
+    font-size: 11px;
+
+    border: 1px solid var(--hairline);
+    border-radius: 6px;
+
+    background: var(--panel);
+    color: var(--muted);
+
+    cursor: pointer;
+    z-index: 1000;
+}
+
+.history-btn:hover {
+    color: var(--text);
+    border-color: var(--text);
+}
