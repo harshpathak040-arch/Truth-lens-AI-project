@@ -124,4 +124,38 @@
 .history-btn:hover {
     color: var(--text);
     border-color: var(--text);
+
+}
+/* ==============================
+   HISTORY BUTTON
+   ============================== */
+
+.history-btn {
+    position: fixed !important;
+    right: 18px !important;
+    bottom: 15px !important;
+
+    width: auto !important;
+    height: auto !important;
+
+    padding: 6px 11px !important;
+
+    background: #1b1f35 !important;
+    color: #c9a227 !important;
+
+    border: 1px solid #c9a227 !important;
+    border-radius: 6px !important;
+
+    font-size: 11px !important;
+    font-weight: 600 !important;
+
+    cursor: pointer !important;
+    z-index: 9999 !important;
+
+    box-sizing: border-box !important;
+}
+
+.history-btn:hover {
+    background: #c9a227 !important;
+    color: #151827 !important;
 }

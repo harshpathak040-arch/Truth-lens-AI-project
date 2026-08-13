@@ -56,22 +56,7 @@ captureBtn.addEventListener("click", async () => {
             throw new Error(data.error);
         }
         // Save analysis to history
-        const historyItem = {
-    claim: data.claim || "No claim found",
-    truePercent: data.truePercent ?? 0,
-    explanation: data.explanation || "No explanation available.",
-    timestamp: new Date().toISOString()
-};
-
-chrome.storage.local.get({ history: [] }, (result) => {
-    const history = result.history;
-
-    history.unshift(historyItem);
-
-    chrome.storage.local.set({
-        history: history.slice(0, 50)
-    });
-});
+        
         saveToHistory(data);
         status.textContent = "✅ Analysis complete";
 
@@ -174,3 +159,23 @@ function saveToHistory(data) {
         JSON.stringify(history.slice(0, 50))
     );
 }
+const historyBtn = document.getElementById("historyBtn");
+
+historyBtn.addEventListener("click", () => {
+    const history = JSON.parse(
+        localStorage.getItem("truthlens_history") || "[]"
+    );
+
+    if (history.length === 0) {
+        alert("No history available.");
+        return;
+    }
+
+    console.log("TruthLens History:", history);
+
+    alert(
+        history.map((item, index) => 
+            `${index + 1}. ${item.claim}\nTruth Score: ${item.truePercent}%`
+        ).join("\n\n")
+    );
+});
