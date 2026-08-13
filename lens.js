@@ -57,6 +57,7 @@ captureBtn.addEventListener("click", async () => {
         }
         // Save analysis to history
 //
+        saveToHistory(data);
         status.textContent = "✅ Analysis complete";
 
         result.innerHTML = `
