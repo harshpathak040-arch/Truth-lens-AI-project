@@ -56,7 +56,22 @@ captureBtn.addEventListener("click", async () => {
             throw new Error(data.error);
         }
         // Save analysis to history
-//
+        const historyItem = {
+    claim: data.claim || "No claim found",
+    truePercent: data.truePercent ?? 0,
+    explanation: data.explanation || "No explanation available.",
+    timestamp: new Date().toISOString()
+};
+
+chrome.storage.local.get({ history: [] }, (result) => {
+    const history = result.history;
+
+    history.unshift(historyItem);
+
+    chrome.storage.local.set({
+        history: history.slice(0, 50)
+    });
+});
         saveToHistory(data);
         status.textContent = "✅ Analysis complete";
 
