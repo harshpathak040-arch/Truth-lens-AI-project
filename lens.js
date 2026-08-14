@@ -58,7 +58,7 @@ captureBtn.addEventListener("click", async () => {
         // Save analysis to history
         
         saveToHistory(data);
-        status.textContent = "✅ Analysis complete";
+        status.textContent = " Analysis complete";
 
         result.innerHTML = `
             <div class="claim">
@@ -82,7 +82,7 @@ captureBtn.addEventListener("click", async () => {
     } catch (error) {
         console.error("Capture error:", error);
 
-        status.textContent = "❌ Capture failed";
+        status.textContent = " Capture failed";
 
         result.innerHTML = `
             <p class="error">
@@ -101,81 +101,81 @@ function escapeHtml(text) {
 // HISTORY
 // ============================================================
 
-const historyBtn = document.getElementById("historyBtn");
-const historyDiv = document.getElementById("history");
+// const historyBtn = document.getElementById("historyBtn");
+// const historyDiv = document.getElementById("history");
 
-if (historyBtn) {
-    historyBtn.addEventListener("click", () => {
+// if (historyBtn) {
+//     historyBtn.addEventListener("click", () => {
 
-        chrome.storage.local.get({ history: [] }, (result) => {
+//         chrome.storage.local.get({ history: [] }, (result) => {
 
-            const history = result.history;
+//             const history = result.history;
 
-            if (history.length === 0) {
-                historyDiv.innerHTML = "<p>No history yet.</p>";
-                return;
-            }
+//             if (history.length === 0) {
+//                 historyDiv.innerHTML = "<p>No history yet.</p>";
+//                 return;
+//             }
 
-            historyDiv.innerHTML = history.map(item => `
-                <div class="history-item">
-                    <strong>${escapeHtml(item.claim)}</strong>
+//             historyDiv.innerHTML = history.map(item => `
+//                 <div class="history-item">
+//                     <strong>${escapeHtml(item.claim)}</strong>
 
-                    <p>
-                        Truth Score:
-                        <strong>${item.truePercent}%</strong>
-                    </p>
+//                     <p>
+//                         Truth Score:
+//                         <strong>${item.truePercent}%</strong>
+//                     </p>
 
-                    <small>
-                        ${new Date(item.timestamp).toLocaleString()}
-                    </small>
+//                     <small>
+//                         ${new Date(item.timestamp).toLocaleString()}
+//                     </small>
 
-                    <p>${escapeHtml(item.explanation)}</p>
-                </div>
-            `).join("");
+//                     <p>${escapeHtml(item.explanation)}</p>
+//                 </div>
+//             `).join("");
 
-        });
+//         });
 
-    });
-}
+//     });
+// }
 // ============================================================
 // HISTORY
 // ============================================================
 
-function saveToHistory(data) {
-    const history = JSON.parse(
-        localStorage.getItem("truthlens_history") || "[]"
-    );
+// function saveToHistory(data) {
+//     const history = JSON.parse(
+//         localStorage.getItem("truthlens_history") || "[]"
+//     );
 
-    history.unshift({
-        claim: data.claim || "No claim found",
-        truePercent: data.truePercent ?? 0,
-        explanation: data.explanation || "No explanation available.",
-        timestamp: new Date().toISOString()
-    });
+//     history.unshift({
+//         claim: data.claim || "No claim found",
+//         truePercent: data.truePercent ?? 0,
+//         explanation: data.explanation || "No explanation available.",
+//         timestamp: new Date().toISOString()
+//     });
 
-    // Keep latest 50 results
-    localStorage.setItem(
-        "truthlens_history",
-        JSON.stringify(history.slice(0, 50))
-    );
-}
-const historyBtn = document.getElementById("historyBtn");
+//     // Keep latest 50 results
+//     localStorage.setItem(
+//         "truthlens_history",
+//         JSON.stringify(history.slice(0, 50))
+//     );
+// }
+// const historyBtn = document.getElementById("historyBtn");
 
-historyBtn.addEventListener("click", () => {
-    const history = JSON.parse(
-        localStorage.getItem("truthlens_history") || "[]"
-    );
+// historyBtn.addEventListener("click", () => {
+//     const history = JSON.parse(
+//         localStorage.getItem("truthlens_history") || "[]"
+//     );
 
-    if (history.length === 0) {
-        alert("No history available.");
-        return;
-    }
+//     if (history.length === 0) {
+//         alert("No history available.");
+//         return;
+//     }
 
-    console.log("TruthLens History:", history);
+//     console.log("TruthLens History:", history);
 
-    alert(
-        history.map((item, index) => 
-            `${index + 1}. ${item.claim}\nTruth Score: ${item.truePercent}%`
-        ).join("\n\n")
-    );
-});
+//     alert(
+//         history.map((item, index) => 
+//             `${index + 1}. ${item.claim}\nTruth Score: ${item.truePercent}%`
+//         ).join("\n\n")
+//     );
+// }

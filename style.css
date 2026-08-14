@@ -121,7 +121,7 @@
     z-index: 1000;
 }
 
-.history-btn:hover {
+/* .history-btn:hover {
     color: var(--text);
     border-color: var(--text);
 
@@ -130,7 +130,7 @@
    HISTORY BUTTON
    ============================== */
 
-.history-btn {
+/* .history-btn {
     position: fixed !important;
     right: 18px !important;
     bottom: 15px !important;
@@ -158,4 +158,4 @@
 .history-btn:hover {
     background: #c9a227 !important;
     color: #151827 !important;
-}
+} */ 
