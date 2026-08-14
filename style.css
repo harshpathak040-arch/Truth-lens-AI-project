@@ -103,47 +103,26 @@
 .history-item p {
     margin: 6px 0;
 }
-.history-btn {
-    position: fixed;
-    right: 18px;
-    bottom: 15px;
 
-    padding: 6px 10px;
-    font-size: 11px;
 
-    border: 1px solid var(--hairline);
-    border-radius: 6px;
-
-    background: var(--panel);
-    color: var(--muted);
-
-    cursor: pointer;
-    z-index: 1000;
-}
-
-/* .history-btn:hover {
-    color: var(--text);
-    border-color: var(--text);
-
-}
-/* ==============================
+/* ================================
    HISTORY BUTTON
-   ============================== */
+   ================================ */
 
-/* .history-btn {
+.history-btn {
     position: fixed !important;
-    right: 18px !important;
-    bottom: 15px !important;
+    right: 15px !important;
+    bottom: 12px !important;
 
     width: auto !important;
     height: auto !important;
 
-    padding: 6px 11px !important;
+    padding: 6px 10px !important;
 
-    background: #1b1f35 !important;
-    color: #c9a227 !important;
+    background: var(--panel) !important;
+    color: var(--brass-bright) !important;
 
-    border: 1px solid #c9a227 !important;
+    border: 1px solid var(--brass) !important;
     border-radius: 6px !important;
 
     font-size: 11px !important;
@@ -156,6 +135,6 @@
 }
 
 .history-btn:hover {
-    background: #c9a227 !important;
-    color: #151827 !important;
-} */ 
+    background: var(--brass) !important;
+    color: var(--ink) !important;
+}
