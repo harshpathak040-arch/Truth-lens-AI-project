@@ -4,7 +4,7 @@ const result = document.getElementById("result");
 
 captureBtn.addEventListener("click", async () => {
     try {
-        status.textContent = "📸 Capturing screenshot...";
+        status.textContent = " Capturing screenshot...";
         result.textContent = "";
 
         // Capture the visible tab
@@ -16,7 +16,7 @@ captureBtn.addEventListener("click", async () => {
             throw new Error("Screenshot capture failed.");
         }
 
-        status.textContent = "🔍 Sending screenshot to TruthLens...";
+        status.textContent = " Sending screenshot to TruthLens...";
 
         // Convert screenshot to Blob
         const response = await fetch(dataUrl);
@@ -97,85 +97,57 @@ function escapeHtml(text) {
     div.textContent = text;
     return div.innerHTML;
 }
-// ============================================================
-// HISTORY
-// ============================================================
 
-// const historyBtn = document.getElementById("historyBtn");
-// const historyDiv = document.getElementById("history");
+const historyBtn = document.getElementById("historyBtn");
+const historyDiv = document.getElementById("history");
 
-// if (historyBtn) {
-//     historyBtn.addEventListener("click", () => {
+function saveToHistory(data) {
+    chrome.storage.local.get({ history: [] }, (result) => {
+        const history = Array.isArray(result.history) ? result.history : [];
 
-//         chrome.storage.local.get({ history: [] }, (result) => {
+        history.unshift({
+            claim: data.claim || "No claim found",
+            truePercent: data.truePercent ?? 0,
+            explanation: data.explanation || "No explanation available.",
+            timestamp: new Date().toISOString()
+        });
 
-//             const history = result.history;
+        chrome.storage.local.set({
+            history: history.slice(0, 50)
+        });
+    });
+}
 
-//             if (history.length === 0) {
-//                 historyDiv.innerHTML = "<p>No history yet.</p>";
-//                 return;
-//             }
+if (historyBtn) {
+    historyBtn.addEventListener("click", () => {
+        chrome.storage.local.get({ history: [] }, (result) => {
+            const history = Array.isArray(result.history) ? result.history : [];
 
-//             historyDiv.innerHTML = history.map(item => `
-//                 <div class="history-item">
-//                     <strong>${escapeHtml(item.claim)}</strong>
+            if (!historyDiv) {
+                return;
+            }
 
-//                     <p>
-//                         Truth Score:
-//                         <strong>${item.truePercent}%</strong>
-//                     </p>
+            if (history.length === 0) {
+                historyDiv.innerHTML = "<p>No history yet.</p>";
+                return;
+            }
 
-//                     <small>
-//                         ${new Date(item.timestamp).toLocaleString()}
-//                     </small>
+            historyDiv.innerHTML = history.map(item => `
+                <div class="history-item">
+                    <strong>${escapeHtml(item.claim || "No claim found")}</strong>
 
-//                     <p>${escapeHtml(item.explanation)}</p>
-//                 </div>
-//             `).join("");
+                    <p>
+                        Truth Score:
+                        <strong>${item.truePercent ?? 0}%</strong>
+                    </p>
 
-//         });
+                    <small>
+                        ${new Date(item.timestamp).toLocaleString()}
+                    </small>
 
-//     });
-// }
-// ============================================================
-// HISTORY
-// ============================================================
-
-// function saveToHistory(data) {
-//     const history = JSON.parse(
-//         localStorage.getItem("truthlens_history") || "[]"
-//     );
-
-//     history.unshift({
-//         claim: data.claim || "No claim found",
-//         truePercent: data.truePercent ?? 0,
-//         explanation: data.explanation || "No explanation available.",
-//         timestamp: new Date().toISOString()
-//     });
-
-//     // Keep latest 50 results
-//     localStorage.setItem(
-//         "truthlens_history",
-//         JSON.stringify(history.slice(0, 50))
-//     );
-// }
-// const historyBtn = document.getElementById("historyBtn");
-
-// historyBtn.addEventListener("click", () => {
-//     const history = JSON.parse(
-//         localStorage.getItem("truthlens_history") || "[]"
-//     );
-
-//     if (history.length === 0) {
-//         alert("No history available.");
-//         return;
-//     }
-
-//     console.log("TruthLens History:", history);
-
-//     alert(
-//         history.map((item, index) => 
-//             `${index + 1}. ${item.claim}\nTruth Score: ${item.truePercent}%`
-//         ).join("\n\n")
-//     );
-// }
+                    <p>${escapeHtml(item.explanation || "No explanation available.")}</p>
+                </div>
+            `).join("");
+        });
+    });
+}
