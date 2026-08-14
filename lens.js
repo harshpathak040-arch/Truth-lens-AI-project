@@ -55,9 +55,10 @@ captureBtn.addEventListener("click", async () => {
         if (data.error) {
             throw new Error(data.error);
         }
+
         // Save analysis to history
-        
         saveToHistory(data);
+
         status.textContent = " Analysis complete";
 
         result.innerHTML = `
@@ -98,56 +99,82 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+
+// ============================================================
+// HISTORY
+// ============================================================
+
 const historyBtn = document.getElementById("historyBtn");
 const historyDiv = document.getElementById("history");
 
 function saveToHistory(data) {
-    chrome.storage.local.get({ history: [] }, (result) => {
-        const history = Array.isArray(result.history) ? result.history : [];
 
-        history.unshift({
-            claim: data.claim || "No claim found",
-            truePercent: data.truePercent ?? 0,
-            explanation: data.explanation || "No explanation available.",
-            timestamp: new Date().toISOString()
-        });
+    const history = JSON.parse(
+        localStorage.getItem("truthlens_history") || "[]"
+    );
 
-        chrome.storage.local.set({
-            history: history.slice(0, 50)
-        });
+    history.unshift({
+        claim: data.claim || "No claim found",
+        truePercent: data.truePercent ?? 0,
+        explanation: data.explanation || "No explanation available",
+        timestamp: new Date().toISOString()
     });
+
+    // Keep latest 50 analyses
+    localStorage.setItem(
+        "truthlens_history",
+        JSON.stringify(history.slice(0, 50))
+    );
 }
 
+
 if (historyBtn) {
+
     historyBtn.addEventListener("click", () => {
-        chrome.storage.local.get({ history: [] }, (result) => {
-            const history = Array.isArray(result.history) ? result.history : [];
 
-            if (!historyDiv) {
-                return;
-            }
+        const history = JSON.parse(
+            localStorage.getItem("truthlens_history") || "[]"
+        );
 
-            if (history.length === 0) {
-                historyDiv.innerHTML = "<p>No history yet.</p>";
-                return;
-            }
+        if (!historyDiv) {
+            return;
+        }
 
-            historyDiv.innerHTML = history.map(item => `
-                <div class="history-item">
-                    <strong>${escapeHtml(item.claim || "No claim found")}</strong>
+        if (history.length === 0) {
+            historyDiv.innerHTML = `
+                <p>No history yet.</p>
+            `;
+            return;
+        }
 
-                    <p>
-                        Truth Score:
-                        <strong>${item.truePercent ?? 0}%</strong>
-                    </p>
+        historyDiv.innerHTML = history.map(item => `
+            <div class="history-item">
 
-                    <small>
-                        ${new Date(item.timestamp).toLocaleString()}
-                    </small>
+                <strong>
+                    ${escapeHtml(item.claim || "No claim found")}
+                </strong>
 
-                    <p>${escapeHtml(item.explanation || "No explanation available.")}</p>
-                </div>
-            `).join("");
-        });
+                <p>
+                    Truth Score:
+                    <strong>
+                        ${item.truePercent ?? 0}%
+                    </strong>
+                </p>
+
+                <small>
+                    ${new Date(item.timestamp).toLocaleString()}
+                </small>
+
+                <p>
+                    ${escapeHtml(
+                        item.explanation ||
+                        "No explanation available."
+                    )}
+                </p>
+
+            </div>
+        `).join("");
+
     });
+
 }
