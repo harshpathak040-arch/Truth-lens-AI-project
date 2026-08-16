@@ -121,60 +121,60 @@ function saveToHistory(data) {
     });
 
     // Keep latest 50 analyses
-//     localStorage.setItem(
-//         "truthlens_history",
-//         JSON.stringify(history.slice(0, 50))
-//     );
-// }
+    localStorage.setItem(
+        "truthlens_history",
+        JSON.stringify(history.slice(0, 50))
+    );
+}
 
 
-// if (historyBtn) {
+if (historyBtn) {
 
-//     historyBtn.addEventListener("click", () => {
+    historyBtn.addEventListener("click", () => {
 
-//         const history = JSON.parse(
-//             localStorage.getItem("truthlens_history") || "[]"
-//         );
+        const history = JSON.parse(
+            localStorage.getItem("truthlens_history") || "[]"
+        );
 
-//         if (!historyDiv) {
-//             return;
-//         }
+        if (!historyDiv) {
+            return;
+        }
 
-//         if (history.length === 0) {
-//             historyDiv.innerHTML = `
-//                 <p>No history yet.</p>
-//             `;
-//             return;
-//         }
+        if (history.length === 0) {
+            historyDiv.innerHTML = `
+                <p>No history yet.</p>
+            `;
+            return;
+        }
 
-//         historyDiv.innerHTML = history.map(item => `
-//             <div class="history-item">
+        historyDiv.innerHTML = history.map(item => `
+            <div class="history-item">
 
-//                 <strong>
-//                     ${escapeHtml(item.claim || "No claim found")}
-//                 </strong>
+                <strong>
+                    ${escapeHtml(item.claim || "No claim found")}
+                </strong>
 
-//                 <p>
-//                     Truth Score:
-//                     <strong>
-//                         ${item.truePercent ?? 0}%
-//                     </strong>
-//                 </p>
+                <p>
+                    Truth Score:
+                    <strong>
+                        ${item.truePercent ?? 0}%
+                    </strong>
+                </p>
 
-//                 <small>
-//                     ${new Date(item.timestamp).toLocaleString()}
-//                 </small>
+                <small>
+                    ${new Date(item.timestamp).toLocaleString()}
+                </small>
 
-//                 <p>
-//                     ${escapeHtml(
-//                         item.explanation ||
-//                         "No explanation available."
-//                     )}
-//                 </p>
+                <p>
+                    ${escapeHtml(
+                        item.explanation ||
+                        "No explanation available."
+                    )}
+                </p>
 
-//             </div>
-//         `).join("");
+            </div>
+        `).join("");
 
-//     });
+    });
 
-// }
+}
