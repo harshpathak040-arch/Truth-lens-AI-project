@@ -140,10 +140,10 @@ if (historyBtn) {
             return;
         }
 
-        // if (history.length === 0) {
-        //     historyDiv.innerHTML = `
-        //         <p>No history yet.</p>
-        //     `;
+        if (history.length === 0) {
+            historyDiv.innerHTML = `
+                <p>No history yet.</p>
+            `;
             return;
         }
 
