@@ -30,6 +30,13 @@
     border-radius: 8px;
     border: 1px solid var(--hairline);
 }
+.logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto 10px;
+}
 
 
 /* ================================
