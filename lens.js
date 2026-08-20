@@ -113,7 +113,7 @@ function saveToHistory(data) {
         localStorage.getItem("truthlens_history") || "[]"
     );
 
-    history.unshift(
+    history.unshift({
         claim: data.claim || "No claim found",
         truePercent: data.truePercent ?? 0,
         explanation: data.explanation || "No explanation available",
