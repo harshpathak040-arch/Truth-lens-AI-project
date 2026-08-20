@@ -12,7 +12,7 @@ captureBtn.addEventListener("click", async () => {
             format: "png"
         });
 
-        if (!dataUrl) {
+        if (!dataUrl) 
             throw new Error("Screenshot capture failed.");
         }
 
