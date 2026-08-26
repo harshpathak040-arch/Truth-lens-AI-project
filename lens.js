@@ -107,11 +107,11 @@ function escapeHtml(text) {
 const historyBtn = document.getElementById("historyBtn");
 const historyDiv = document.getElementById("history");
 
-function saveToHistory(data) {
+// function saveToHistory(data) {
 
-    const history = JSON.parse(
-        localStorage.getItem("truthlens_history") || "[]"
-    );
+//     const history = JSON.parse(
+//         localStorage.getItem("truthlens_history") || "[]"
+//     );
 
     history.unshift({
         claim: data.claim || "No claim found",
