@@ -110,7 +110,7 @@ const historyDiv = document.getElementById("history");
 function saveToHistory(data) {
 
     const history = JSON.parse(
-        localStorage.getItem("truthlens_history") || "[]"
+        // localStorage.getItem("truthlens_history") || "[]"
     );
 
     history.unshift({
