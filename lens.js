@@ -104,8 +104,8 @@ function escapeHtml(text) {
 // HISTORY
 // ============================================================
 
-const historyBtn = document.getElementById("historyBtn");
-const historyDiv = document.getElementById("history");
+// const historyBtn = document.getElementById("historyBtn");
+// const historyDiv = document.getElementById("history");
 
 function saveToHistory(data) {
 
