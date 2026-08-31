@@ -503,7 +503,7 @@ async def analyze(
 # ============================================================
 # The Chrome extension sends screenshots here.
 #
-# It uses the same analysis function as /analyze.
+# It uses the same analysis function as /analyze...
 # ============================================================
 
 @app.post("/api/analyze-file")
