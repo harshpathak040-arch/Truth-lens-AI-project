@@ -109,9 +109,9 @@ const historyDiv = document.getElementById("history");
 
 function saveToHistory(data) {
 
-    // const history = JSON.parse(
-    //     localStorage.getItem("truthlens_history") || "[]"
-    // );
+    const history = JSON.parse(
+        localStorage.getItem("truthlens_history") || "[]"
+    );
 // .....
     history.unshift({
         claim: data.claim || "No claim found",
