@@ -145,7 +145,7 @@ if (historyBtn) {
         //         <p>No history yet.</p>
         //     `;
         //     return;
-        }
+        // }
 
         historyDiv.innerHTML = history.map(item => `
             <div class="history-item">
