@@ -499,7 +499,7 @@ async def analyze(
 
 
 # ============================================================
-# BROWSER EXTENSION API
+#
 # ============================================================
 # The Chrome extension sends screenshots here.
 #
@@ -508,7 +508,7 @@ async def analyze(
 
 @app.post("/api/analyze-file")
 async def analyze_file(
-    image: UploadFile = File(..)
+    image: UploadFile = File(...)
 ):
 
     return await analyze(image)
