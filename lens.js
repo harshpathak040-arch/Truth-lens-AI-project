@@ -40,7 +40,14 @@ captureBtn.addEventListener("click", async () => {
             }
         );
 
-    
+        if (!apiResponse.ok) {
+            const errorText = await apiResponse.text();
+
+            throw new Error(
+                `Server error: ${apiResponse.status} ${errorText}`
+            );
+        }
+
         const data = await apiResponse.json();
 
         console.log("TruthLens response:", data);
