@@ -140,12 +140,12 @@ if (historyBtn) {
             return;
         }
 
-        // if (history.length === 0) {
-        //     historyDiv.innerHTML = `
-        //         <p>No history yet.</p>
-        //     `;
-        //     return;
-        // }
+        if (history.length === 0) {
+            historyDiv.innerHTML = `
+                <p>No history yet.</p>
+            `;
+            return;
+        }
 
         historyDiv.innerHTML = history.map(item => `
             <div class="history-item">
