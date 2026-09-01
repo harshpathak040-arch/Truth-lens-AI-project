@@ -147,8 +147,8 @@ if (historyBtn) {
             return;
         }
 
-        // historyDiv.innerHTML = history.map(item => `
-        //     <div class="history-item">
+        historyDiv.innerHTML = history.map(item => `
+            <div class="history-item">
 
                 <strong>
                     ${escapeHtml(item.claim || "No claim found")}
