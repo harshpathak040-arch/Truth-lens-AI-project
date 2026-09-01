@@ -499,7 +499,7 @@ async def analyze(
 
 
 # ============================================================
-#
+# BROWSER EXTENSION API
 # ============================================================
 # The Chrome extension sends screenshots here.
 #
