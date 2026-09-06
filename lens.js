@@ -25,11 +25,11 @@ captureBtn.addEventListener("click", async () => {
         // Create FormData
         const formData = new FormData();
 
-        formData.append(
-            "image",
-            blob,
-            "truthlens-screenshot.png"
-        );
+        // formData.append(
+        //     "image",
+        //     blob,
+        //     "truthlens-screenshot.png"
+        // );
 
         // Send to FastAPI
         const apiResponse = await fetch(
