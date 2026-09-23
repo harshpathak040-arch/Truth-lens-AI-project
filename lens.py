@@ -517,7 +517,7 @@ async def analyze_file(
 # ============================================================
 # HEALTH CHECK
 # ============================================================
-# Useful for checking whether TruthLens backend is running.
+# Useful for checking whether TruthLens backend is running....
 # ============================================================
 
 @app.get("/api/health")
