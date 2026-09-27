@@ -523,10 +523,10 @@ async def analyze_file(
 @app.get("/api/health")
 def health_check():
 
-    # return {
-    #     "status": "online",
-    #     "service": "TruthLens AI"
-    # }
+    return {
+        "status": "online",
+        "service": "TruthLens AI"
+    }
 
 
 # ============================================================
