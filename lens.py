@@ -520,13 +520,13 @@ async def analyze_file(
 # Useful for checking whether TruthLens backend is running..
 # ============================================================
 
-# @app.get("/api/health")
-# def health_check():
+@app.get("/api/health")
+def health_check():
 
-#     return {
-#         "status": "online",
-#         "service": "TruthLens AI"
-#     }
+    return {
+        "status": "online",
+        "service": "TruthLens AI"
+    }
 
 
 # ============================================================
