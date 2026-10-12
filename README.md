@@ -103,11 +103,11 @@ Follow the project's folder structure and configuration for the exact startup pr
 - Encourage critical thinking and responsible information sharing.
 - Explore practical applications of AI in fact-checking.
 
-## ⚠️ Disclaimer
+## Disclaimer
 
 TruthLens AI provides AI-generated analysis and is not a substitute for independent verification using reliable sources. AI-generated results and confidence scores may be inaccurate. Important claims should be checked against trustworthy, primary sources.
 
-## 👨‍💻 Author
+##  creater
 
 **Harsh Pathak**
 
