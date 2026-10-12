@@ -101,13 +101,9 @@ function escapeHtml(text) {
 
 
 // ============================================================
-<<<<<<< HEAD
-// HISTORY
 
-
-=======
-// HISTORY...
->>>>>>> 27391e8 (js updated)
+// HISTORY 
+ 
 // ============================================================
 
 const historyBtn = document.getElementById("historyBtn");
