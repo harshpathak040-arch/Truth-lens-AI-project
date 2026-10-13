@@ -15,7 +15,7 @@ TruthLens AI is an AI-powered fact-checking project designed to help users analy
 - **Analysis History:** Access previous analyses through the history interface.
 - **Browser Extension:** Provide a convenient interface for analyzing claims through a browser popup.
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 **Backend**
 - Python
@@ -31,7 +31,7 @@ TruthLens AI is an AI-powered fact-checking project designed to help users analy
 - Visual Studio Code
 - Git and GitHub
 
-## ⚙️ Installation and Setup
+##  Installation and Setup
 
 ### 1. Clone the Repository
 
@@ -88,7 +88,7 @@ Open the frontend using your configured local server or load the extension into 
 
 Follow the project's folder structure and configuration for the exact startup process.
 
-## 🔄 How It Works
+##  How It Works
 
 1. The user submits text, an image, or a screenshot.
 2. The backend receives and processes the content.
