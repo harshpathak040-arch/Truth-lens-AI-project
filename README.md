@@ -4,7 +4,7 @@
 
 TruthLens AI is an AI-powered fact-checking project designed to help users analyze claims from text, images, and screenshots. It uses AI to evaluate the provided content, identify potentially misleading information, and generate an analysis with a confidence score.
 
-## 🚀 Features
+## Features
 
 - **Text Analysis:** Analyze claims and statements for potential misinformation.
 - **Image Analysis:** Extract and analyze claims from uploaded images.
