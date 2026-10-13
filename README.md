@@ -1,4 +1,4 @@
-# 🔍 TruthLens AI
+# TruthLens AI
 
 **AI-Powered Fact-Checking and Claim Analysis Tool**
 
