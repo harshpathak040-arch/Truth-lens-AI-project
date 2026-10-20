@@ -8,7 +8,7 @@ from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image
-
+from fastapi.staticfiles import StaticFiles
 from google import genai
 from google.genai import types
 from dotenv import load_dotenv
@@ -20,7 +20,16 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent
 
+BASE_DIR = Path(__file__).resolve().parent
+
 app = FastAPI(title="TruthLens AI")
+
+# Serve CSS, JavaScript and logo files
+app.mount(
+    "/static",
+    StaticFiles(directory=BASE_DIR / "static"),
+    name="static"
+)
 
 
 # ============================================================
