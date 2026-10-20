@@ -36,7 +36,7 @@ TruthLens AI is an AI-powered fact-checking project designed to help users analy
 ### 1. Clone the Repository
 
 ```bash
-git clone <your-repository-url>
+git clone <repository-url>
 cd TruthLens-AI
 ```
 

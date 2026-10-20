@@ -4,7 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TruthLens AI</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="/static/style.css">
+
+<img
+    src="/static/icons/tlens-logo.png"
+    alt="TruthLens AI Logo"
+>
     <style>
         :root {
             --ink: #0D101C;
@@ -107,6 +112,8 @@
             margin-bottom: 12px;
         }
 
+        
+
         .claim p,
         .truth-score p,
         .explanation p {
@@ -123,7 +130,7 @@
     <div class="app">
 
         <div class="header">
-    <img src="tlens-logo.png" alt="TruthLens AI" class="logo">
+    <!-- <img src="tlens-logo.png" alt="TruthLens AI" class="logo"> -->
 
     <h1>TruthLens <span class="ai-tag">AI</span></h1>
 
@@ -147,6 +154,12 @@
         <div id="history"></div>
 
     </div>
+    <div class="logo-container">
+    <img src="icons/tlens-logo.png"
+         alt="TruthLens AI Logo"
+         class="app-logo">
+    <h2>TruthLens AI</h2>
+</div>
 
     <!-- Load JavaScript only once, after ALL HTML elements exist .
     <script src="lens.js"></script>

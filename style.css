@@ -36,6 +36,29 @@
     object-fit: contain;
     display: block;
     margin: 0 auto 10px;
+
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.app-logo {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    display: block;
+    background: transparent;
+    flex-shrink: 0;
+}
+
+.logo-container h2 {
+    margin: 0;
+    font-size: 17px;
+    color: var(--text);
 }
 
 
@@ -115,33 +138,16 @@
 /* ================================
    HISTORY BUTTON
    ================================ */
-
 .history-btn {
-    position: fixed !important;
-    right: 15px !important;
-    bottom: 12px !important;
-
-    width: auto !important;
-    height: auto !important;
-
-    padding: 6px 10px !important;
-
-    background: var(--panel) !important;
-    color: var(--brass-bright) !important;
-
-    border: 1px solid var(--brass) !important;
-    border-radius: 6px !important;
-
-    font-size: 11px !important;
-    font-weight: 600 !important;
-
-    cursor: pointer !important;
-    z-index: 9999 !important;
-
-    box-sizing: border-box !important;
+    position: static !important;
+    margin-top: 16px;
+    width: auto;
+    padding: 6px 10px;
+    background: var(--panel);
+    color: var(--brass-bright);
+    border: 1px solid var(--brass);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
 }
-
-.history-btn:hover {
-    background: var(--brass) !important;
-    color: var(--ink) !important;
-} 
